@@ -13,7 +13,13 @@ ISO_DIR     := isodir
 LINKER      := linker.ld
 GRUB_CFG    := grub.cfg
 
-C_SRCS      := $(SRC_DIR)/main.c
+# Ici peut-etre mettre un .mk dans chaque dossier et les importer histoire de pas avoir 1000 fichiers
+#
+
+include src/kernel/files.mk
+
+C_SRCS      := $(SRC_DIR)/main.c \
+
 ASM_SRCS    := $(SRC_DIR)/bootloader.s
 
 C_OBJS      := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_SRCS))
