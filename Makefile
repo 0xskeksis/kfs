@@ -1,9 +1,9 @@
 NAME        := kfs
 ISO         := $(NAME).iso
 
-TOOLCHAIN   := i386-elf-
-CC          := $(TOOLCHAIN)gcc
-AS          := $(TOOLCHAIN)as
+TOOLCHAIN   := --target=i386-elf
+CC          := clang $(TOOLCHAIN)
+AS          := clang $(TOOLCHAIN)
 
 BUILD_DIR   := .build
 SRC_DIR     := src
@@ -16,7 +16,7 @@ GRUB_CFG    := grub.cfg
 # Ici peut-etre mettre un .mk dans chaque dossier et les importer histoire de pas avoir 1000 fichiers
 #
 
-include src/kernel/files.mk
+# include src/kernel/files.mk
 
 C_SRCS      := $(SRC_DIR)/main.c \
 
@@ -41,7 +41,7 @@ ASFLAGS     :=
 LDFLAGS     := -T $(LINKER)        \
                -nostdlib           \
                -nodefaultlibs
-LDLIBS      := -lgcc
+LDLIBS      := 
 
 ifeq ($(DEBUG),1)
 	CFLAGS += -g

@@ -19,4 +19,5 @@ int main(void)
 	terminal_initialize();
 
 	terminal_writestring("Hello, kernel World!\n");
+	return 1;
 }
