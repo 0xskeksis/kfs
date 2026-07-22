@@ -192,6 +192,10 @@ void terminal_writestring(const char* data)
 {
 	terminal_write(data, strlen(data));
 }
+#include "kernel/vga.h"
+
+#include "ctype.h"
+#include "stdio.h"
 
 int main(void) 
 {
@@ -221,4 +225,6 @@ int main(void)
 
 		terminal_putchar(character);
 	}
+	printf("%s %i %c %x %u", "hello", 12, 'c', 42, -12);
+	return 1;
 }

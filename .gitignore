@@ -1,3 +1,8 @@
-.zig-cache/
-zig-out/
+.build/
 *.o
+*.a
+kfs
+*.iso
+isodir/
+compile_commands.json
+.cache
