@@ -3,7 +3,7 @@
 
 #include "sys/types.h"
 #include "stdint.h"
-#include "kernel/vga.h"
+#include "vga.h"
 
 
 

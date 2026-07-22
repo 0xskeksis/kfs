@@ -138,6 +138,35 @@ char keycode_to_char(keycode key)
 
 #undef HANDLE_KEY_STATE
 
+int handle_shortcut(keycode key)
+{
+	if (ctrl_is_active() && key == KEY_C)
+	{
+		terminal_initialize(CURRENT_TERMINAL, (CURRENT_TERMINAL)->id);
+		return 1;
+	}
+	if (alt_is_active() && key == KEY_F1)
+	{
+		current_term = 0;
+		terminal_render(CURRENT_TERMINAL);
+		return 1;
+	}	
+	if (alt_is_active() && key == KEY_F2)
+	{
+		current_term = 1;
+		terminal_render(CURRENT_TERMINAL);
+		return 1;
+	}	
+	if (alt_is_active() && key == KEY_F3)
+	{
+		current_term = 2;
+		terminal_render(CURRENT_TERMINAL);
+		return 1;
+	}
+
+	return 0;
+}
+
 void handle_keyboard_entry()
 {
 	unsigned char scancode;
@@ -147,8 +176,8 @@ void handle_keyboard_entry()
 		return;
 
 	key_event event;
-	res = keyboard_decode_byte(scancode, &event);
 
+	res = keyboard_decode_byte(scancode, &event);
 	if (res == 0)
 		return;
 
@@ -156,9 +185,13 @@ void handle_keyboard_entry()
 	if (!event.pressed)
 		return;
 
+	res = handle_shortcut(event.key);
+	if (res == 1)
+		return;
+
 	char character = keycode_to_char(event.key);
 	if (character == '\0')
 		return;
 
-	terminal_putchar(character);
+	terminal_putchar(CURRENT_TERMINAL, character);
 }
