@@ -1,41 +1,55 @@
 NAME        := kfs
 ISO         := $(NAME).iso
 
-TOOLCHAIN   := i386-elf-
-CC          := $(TOOLCHAIN)gcc
-AS          := $(TOOLCHAIN)as
+TOOLCHAIN   := i386-elf
+CC          := $(TOOLCHAIN)-gcc
+AS          := $(TOOLCHAIN)-as
 
 BUILD_DIR   := .build
-SRC_DIR     := src
-INC_DIR     := include
+SRC_DIRS   := 	src \
+				src/kernel \
+
+# SRC_DIRS	:= $(addprefix src/, $(SRC_DIRS))
+INC_DIR     := include \
+			   usr/klibc/include \
+
 ISO_DIR     := isodir
 
 LINKER      := linker.ld
+
 GRUB_CFG    := grub.cfg
 
-C_SRCS      := $(SRC_DIR)/main.c
-ASM_SRCS    := $(SRC_DIR)/bootloader.s
+C_SRCS		:= $(foreach DIR, $(SRC_DIRS), $(wildcard $(DIR)/*.c))
 
-C_OBJS      := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_SRCS))
-ASM_OBJS    := $(patsubst $(SRC_DIR)/%.s,$(BUILD_DIR)/%.o,$(ASM_SRCS))
+# $(info $(C_SRCS))
+
+# Pour l'instant je le fais a la main mais si yen a trop je changerais
+ASM_SRCS    := src/kernel/bootloader.s \
+
+C_OBJS  	= $(addprefix $(BUILD_DIR)/, $(C_SRCS:%.c=%.o))
+ASM_OBJS  	= $(addprefix $(BUILD_DIR)/, $(ASM_SRCS:%.s=%.o))
 OBJS        := $(C_OBJS) $(ASM_OBJS)
 
 DEPS        := $(C_OBJS:.o=.d)
 
-IFLAGS    := -I$(INC_DIR)
+# IFLAGS    := -I$(INC_DIR)
+
+IFLAGS    := $(foreach dir, $(INC_DIR), $(addprefix -I, $(dir)))
+
+$(info $(IFLAGS))
+
 CFLAGS      := -std=gnu11          \
                -ffreestanding      \
                -fno-builtin        \
                -fno-stack-protector \
                -O0                 \
                -MMD                \
-               -MP
+               -MP					\
 
 ASFLAGS     :=
 LDFLAGS     := -T $(LINKER)        \
                -nostdlib           \
                -nodefaultlibs
-LDLIBS      := -lgcc
 
 ifeq ($(DEBUG),1)
 	CFLAGS += -g
@@ -51,6 +65,13 @@ CP          := cp
 
 Q           := @
 
+KERNEL_LIB_PATH	:=	usr/klibc
+KERNEL_LIB_NAME	:=	$(KERNEL_LIB_PATH)/klibc.a
+
+LDLIBS      := $(KERNEL_LIB_NAME)
+
+MAKEFLAGS = --no-print-directory
+
 ifeq ($(VERBOSE),1)
 	Q :=
 endif
@@ -59,19 +80,23 @@ endif
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LINKER)
+$(NAME): $(OBJS) $(LINKER) $(KERNEL_LIB_NAME)
 	@printf " $(GREEN)$(BOLD)■$(RESET)  linking    $(NAME)\n"
 	$(Q)$(CC) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(BUILD_DIR)/%.o: %.c
 	@printf " $(CYAN)$(BOLD)■$(RESET)  compiling  $<\n"
 	$(Q)$(MKDIR) $(@D)
 	$(Q)$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.s
+$(BUILD_DIR)/%.o: %.s
 	@printf " $(CYAN)$(BOLD)■$(RESET)  assembling $<\n"
 	$(Q)$(MKDIR) $(@D)
 	$(Q)$(AS) $(ASFLAGS) $< -o $@
+
+$(KERNEL_LIB_NAME): $(KERNEL_LIB_PATH)
+	$(Q)@printf " $(CYAN)$(BOLD)■$(RESET)  compiling  $<\n"
+	$(Q)make -C $(KERNEL_LIB_PATH)
 
 iso: $(ISO)
 
@@ -92,10 +117,12 @@ run: $(ISO)
 clean:
 	@printf " $(RED)$(BOLD)■$(RESET)  removing   $(BUILD_DIR) $(ISO_DIR)\n"
 	$(Q)$(RM) $(BUILD_DIR) $(ISO_DIR)
+	$(Q)make clean -C $(KERNEL_LIB_PATH)
 
 fclean: clean
 	@printf " $(RED)$(BOLD)■$(RESET)  removing   $(NAME) $(ISO)\n"
 	$(Q)$(RM) $(NAME) $(ISO)
+	$(Q)make fclean -C $(KERNEL_LIB_PATH)
 
 re: fclean all
 
