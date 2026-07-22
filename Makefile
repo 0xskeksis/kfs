@@ -13,7 +13,7 @@ ISO_DIR     := isodir
 LINKER      := linker.ld
 GRUB_CFG    := grub.cfg
 
-C_SRCS      := $(SRC_DIR)/main.c
+C_SRCS      := $(SRC_DIR)/main.c $(SRC_DIR)/keyboard.c $(SRC_DIR)/io.c
 ASM_SRCS    := $(SRC_DIR)/bootloader.s
 
 C_OBJS      := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_SRCS))

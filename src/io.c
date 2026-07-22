@@ -1,6 +1,6 @@
 #include <io.h>
 
-static inline unsigned char inb(unsigned short port)
+inline unsigned char inb(unsigned short port)
 {
 	unsigned char value;
 

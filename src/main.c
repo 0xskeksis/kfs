@@ -1,4 +1,4 @@
-
+#include "keyboard.h"
 __attribute__((noreturn))
 void
 __exit(int status){
@@ -23,8 +23,6 @@ __exit(int status){
  *
  */
 
-#include <stdbool.h>
-#include <stddef.h>
 #include "stdint.h"
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
@@ -57,6 +55,8 @@ enum vga_color {
 	VGA_COLOR_WHITE = 15,
 };
 
+typedef unsigned int size_t;
+
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) 
 {
 	return fg | bg << 4;
@@ -83,6 +83,7 @@ size_t terminal_row;
 size_t terminal_column;
 uint8_t terminal_color;
 uint16_t* terminal_buffer = (uint16_t*)VGA_MEMORY;
+size_t terminal_line_end[VGA_HEIGHT];
 
 void terminal_initialize(void) 
 {
@@ -90,11 +91,14 @@ void terminal_initialize(void)
 	terminal_column = 0;
 	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	
-	for (size_t y = 0; y < VGA_HEIGHT; y++) {
-		for (size_t x = 0; x < VGA_WIDTH; x++) {
+	for (size_t y = 0; y < VGA_HEIGHT; y++) 
+	{
+		for (size_t x = 0; x < VGA_WIDTH; x++) 
+		{
 			const size_t index = y * VGA_WIDTH + x;
 			terminal_buffer[index] = vga_entry(' ', terminal_color);
 		}
+		terminal_line_end[y] = 0;
 	}
 }
 
@@ -109,13 +113,72 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
+#define TAB_WIDTH 4
+void terminal_putchar(char c); 
+
+int handle_special_char(char c)
+{
+	switch (c)
+	{
+		case '\t':
+			{
+				size_t spaces = TAB_WIDTH - (terminal_column % TAB_WIDTH);
+				while(spaces--)
+					terminal_putchar(' ');
+				return 1;
+			}
+		case '\n': //Later handle command when \n
+			{
+				terminal_line_end[terminal_row] = terminal_column;
+
+				terminal_column = 0;
+				if (++terminal_row == VGA_HEIGHT)
+					terminal_row = 0;
+				
+				terminal_line_end[terminal_row] = 0;
+				return 1;
+			}
+		case '\b':
+			{
+				if (terminal_column == 0)
+				{
+					if (terminal_row == 0)
+						return 1;
+					
+					terminal_row--;
+					terminal_column = terminal_line_end[terminal_row];
+
+					if (terminal_column == 0)
+						return 1;
+				}
+
+				terminal_column--;
+
+				terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+
+				terminal_line_end[terminal_row] = terminal_column;
+				return 1;
+			}
+	}
+
+	return 0;
+}
+
 void terminal_putchar(char c) 
 {
+	if (handle_special_char(c))
+		return;
+
 	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
-	if (++terminal_column == VGA_WIDTH) {
+	if (++terminal_column == VGA_WIDTH) 
+	{
+		terminal_line_end[terminal_row] = VGA_WIDTH;
 		terminal_column = 0;
+
 		if (++terminal_row == VGA_HEIGHT)
 			terminal_row = 0;
+
+		terminal_line_end[terminal_row] = 0;
 	}
 }
 
@@ -132,9 +195,30 @@ void terminal_writestring(const char* data)
 
 int main(void) 
 {
-	/* Initialize terminal interface */
 	terminal_initialize();
 
-	/* Newline support is left as an exercise. */
-	terminal_writestring("Hello, kernel World!\n");
+	for (;;)
+	{
+		unsigned char scancode;
+
+		int res = keyboard_read_scancode(&scancode);
+		if (res == 0)
+			continue;
+
+		key_event event;
+		res = keyboard_decode_byte(scancode, &event);
+
+		if (res == 0)
+			continue;
+
+		keyboard_update_state(event.key, event.pressed);
+		if (!event.pressed)
+			continue;
+
+		char character = keycode_to_char(event.key);
+		if (character == '\0')
+			continue;
+
+		terminal_putchar(character);
+	}
 }
