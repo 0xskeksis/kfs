@@ -1,6 +1,6 @@
 #include <io.h>
 #include <keyboard.h>
-#include <kernel/vga.h>
+#include <vga.h>
 #include <stdint.h>
 
 static unsigned char keyboard_state = 0;

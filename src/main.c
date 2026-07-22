@@ -11,7 +11,7 @@ __exit(int status){
 	__builtin_unreachable();
 }
 
-#include "kernel/vga.h"
+#include "vga.h"
 #include "stdio.h"
 #include "keyboard.h"
 

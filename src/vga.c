@@ -11,7 +11,7 @@
  *
  */
 
-#include "kernel/vga.h"
+#include "vga.h"
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
