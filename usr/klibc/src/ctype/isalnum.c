@@ -2,5 +2,5 @@
 
 int
 isalnum(char c){
-	return()
+	return(1);
 }

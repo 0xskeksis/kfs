@@ -1,6 +1,11 @@
-CC			= 	clang
+TOOLCHAIN   := i386-elf
+CC          := $(TOOLCHAIN)-gcc
 		
-CFLAGS		=	--target=i386-elf
+CFLAGS		=	-ffreestanding      \
+               -fno-builtin        \
+               -fno-stack-protector \
+
+IFLAGS		=	-I ./include
 
 SRCS_DIRS 	:= 		ctype \
 					stdio \
@@ -9,19 +14,27 @@ SRCS_DIRS 	:= 		ctype \
 
 SRCS_DIRS	:= $(addprefix src/, $(SRCS_DIRS))
 
-SRCS		:= $(foreach DIR, $(SRCS_DIRS), $(DIR)/$(wildcard $(DIR)/*.c))
+SRCS		:= $(foreach DIR, $(SRCS_DIRS), $(wildcard $(DIR)/*.c))
 
 BUILD_DIR	:= .build
 
 OBJS  		= $(addprefix $(BUILD_DIR)/, $(SRCS:%.c=%.o))
 
-DIR_UP		:=	mkdir -p $(@)
+DIR_UP		=	mkdir -p $(@D)
 
-LIBNAME	:= klibc.a
+NAME	:= klibc.a
 
-$(info $(OBJS)) 
+RM		:= rm -rf
 
-all:
+all: $(NAME)
 
-
-
+$(NAME): $(OBJS)
+	@ar rcs $(NAME) $^
+$(BUILD_DIR)/%.o: %.c
+	@$(DIR_UP)
+	@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
+clean:
+	@$(RM) $(BUILD_DIR)
+fclean: clean
+	@$(RM) $(NAME)
+re: fclean all

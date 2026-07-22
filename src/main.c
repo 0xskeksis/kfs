@@ -1,4 +1,3 @@
-
 __attribute__((noreturn))
 void
 __exit(int status){
@@ -14,10 +13,13 @@ __exit(int status){
 
 #include "kernel/vga.h"
 
+#include "ctype.h"
+
 int main(void) 
 {
 	terminal_initialize();
 
+	isalpha('c');
 	terminal_writestring("Hello, kernel World!\n");
 	return 1;
 }
