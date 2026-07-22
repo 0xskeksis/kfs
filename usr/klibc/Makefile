@@ -5,7 +5,7 @@ CFLAGS		=	-ffreestanding      \
                -fno-builtin        \
                -fno-stack-protector \
 
-IFLAGS		=	-I ./include
+IFLAGS		=	-I ./include -I ../../include/
 
 SRCS_DIRS 	:= 		ctype \
 					stdio \

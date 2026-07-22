@@ -1,6 +1,6 @@
 #include "ctype.h"
 
-int
-isalnum(char c){
-	return(1);
+int	isalnum(char c)
+{
+	return (isalpha(c) || isdigit(c));
 }

@@ -22,15 +22,18 @@
 #define VGA_HEIGHT  25
 #define VGA_MEMORY  0xB8000
 
-#include <stdbool.h>
-#include <stddef.h>
+#include "stddef.h"
 #include "stdint.h"
+#include "unistd.h"
 
 void terminal_writestring(const char* data);
 void terminal_write(const char* data, size_t size);
 void terminal_putchar(char c);
 void terminal_initialize(void);
 void terminal_setcolor(uint8_t color);
+
+ssize_t	write(int fd, const void *buf, size_t count);
+
 
 
 #endif

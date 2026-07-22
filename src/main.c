@@ -14,12 +14,12 @@ __exit(int status){
 #include "kernel/vga.h"
 
 #include "ctype.h"
+#include "stdio.h"
 
 int main(void) 
 {
 	terminal_initialize();
 
-	isalpha('c');
-	terminal_writestring("Hello, kernel World!\n");
+	printf("%s %i %c %x %u", "hello", 12, 'c', 42, -12);
 	return 1;
 }
