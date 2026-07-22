@@ -17,7 +17,9 @@ __exit(int status){
 
 int main(void) 
 {
-	terminal_initialize();
+	terminal_initialize(&terminals[0], 0);
+	terminal_initialize(&terminals[1], 1);
+	terminal_initialize(&terminals[2], 2);
 
 	//printf("%s %i %c %x %u", "hello", 12, 'c', 42, -12);
 	for (;;)
