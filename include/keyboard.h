@@ -172,6 +172,7 @@ int keyboard_read_scancode(unsigned char *scancode);
 int keyboard_decode_byte(uint8_t byte, key_event *event);
 void keyboard_update_state(keycode key, char pressed);
 char keycode_to_char(keycode key);
+void handle_keyboard_entry();
 
 static const keycode normal_scancode_map[128] = {
 	[0x01] = KEY_ESCAPE,

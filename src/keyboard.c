@@ -1,5 +1,6 @@
 #include <io.h>
 #include <keyboard.h>
+#include <kernel/vga.h>
 #include <stdint.h>
 
 static unsigned char keyboard_state = 0;
@@ -136,3 +137,28 @@ char keycode_to_char(keycode key)
 }
 
 #undef HANDLE_KEY_STATE
+
+void handle_keyboard_entry()
+{
+	unsigned char scancode;
+
+	int res = keyboard_read_scancode(&scancode);
+	if (res == 0)
+		return;
+
+	key_event event;
+	res = keyboard_decode_byte(scancode, &event);
+
+	if (res == 0)
+		return;
+
+	keyboard_update_state(event.key, event.pressed);
+	if (!event.pressed)
+		return;
+
+	char character = keycode_to_char(event.key);
+	if (character == '\0')
+		return;
+
+	terminal_putchar(character);
+}
