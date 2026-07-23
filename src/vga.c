@@ -12,6 +12,7 @@
  */
 
 #include "vga.h"
+#include <cursor.h>
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -79,6 +80,7 @@ static void terminal_putentryat(t_terminal *term, char c, uint8_t color, size_t 
 	const size_t index = y * VGA_WIDTH + x;
 	uint16_t entry = vga_entry(c, color);
 	term->buffer[index] = entry;
+	set_cursor_pos(index+1);
 
 	if (term->id == current_term)
 		vga_memory[index] = entry;
@@ -106,6 +108,7 @@ static int handle_special_char(t_terminal *term, char c)
 				if (++term->row == VGA_HEIGHT)
 					term->row = 0;
 				
+				set_cursor_pos(cursor_pos(term->row, term->col));
 				term->line_end[term->row] = 0;
 				return 1;
 			}
@@ -119,6 +122,8 @@ static int handle_special_char(t_terminal *term, char c)
 					term->row--;
 					term->col = term->line_end[term->row];
 
+					set_cursor_pos(cursor_pos(term->row, term->col));
+					
 					if (term->col == 0)
 						return 1;
 				}
@@ -174,4 +179,6 @@ void terminal_render(t_terminal *term)
 
 	for (size_t i = 0; i < VGA_SIZE; i++)
 		vga_memory[i] = term->buffer[i];
+
+	set_cursor_pos(cursor_pos(term->row, term->col));
 }
