@@ -51,6 +51,7 @@ void terminal_write(t_terminal *term, const char* data, size_t size);
 void terminal_putchar(t_terminal *term, char c);
 void terminal_initialize(t_terminal *term, size_t id);
 void terminal_render(t_terminal *term);
+void scroll_terminal(t_terminal *term);
 
 #define CURRENT_TERMINAL (&terminals[current_term])
 
