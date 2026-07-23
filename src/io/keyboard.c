@@ -1,5 +1,5 @@
-#include <io.h>
-#include <keyboard.h>
+#include <io/io.h>
+#include <io/keyboard.h>
 #include <vga.h>
 #include <stdint.h>
 

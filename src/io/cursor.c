@@ -1,5 +1,5 @@
 #include <vga.h>
-#include <io.h>
+#include <io/io.h>
 #include <stddef.h>
 #include <stdint.h>
 

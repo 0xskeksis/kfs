@@ -12,7 +12,8 @@
  */
 
 #include "vga.h"
-#include <cursor.h>
+#include "string.h"
+#include "io/cursor.h"
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -34,13 +35,6 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color)
 	return (uint16_t) uc | (uint16_t) color << 8;
 }
 
-size_t strlen(const char* str) 
-{
-	size_t len = 0;
-	while (str[len])
-		len++;
-	return len;
-}
 
 static uint16_t terminal_buffers[TERMINAL_COUNT][VGA_SIZE];
 static volatile uint16_t *const vga_memory = (volatile uint16_t *)VGA_MEMORY;

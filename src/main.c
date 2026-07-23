@@ -13,7 +13,7 @@ __exit(int status){
 
 #include "vga.h"
 #include "stdio.h"
-#include "keyboard.h"
+#include "io/keyboard.h"
 
 int main(void) 
 {

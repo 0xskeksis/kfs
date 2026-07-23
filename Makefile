@@ -7,7 +7,8 @@ AS          := $(TOOLCHAIN)-as
 
 BUILD_DIR   := .build
 SRC_DIRS   := 	src \
-				src/kernel \
+				src/io \
+				src/utils \
 
 # SRC_DIRS	:= $(addprefix src/, $(SRC_DIRS))
 INC_DIR     := include \
@@ -42,7 +43,7 @@ CFLAGS      := -std=gnu11          \
                -ffreestanding      \
                -fno-builtin        \
                -fno-stack-protector \
-               -O0                 \
+               -Os                 \
                -MMD                \
                -MP					\
 

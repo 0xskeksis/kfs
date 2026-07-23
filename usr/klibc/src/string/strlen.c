@@ -2,7 +2,7 @@
 #include <stddef.h>
 
 size_t	strlen(const char *s){
-	char	*start = s;
+	const char	*start = s;
 
 	while (*s){
 		s++;
