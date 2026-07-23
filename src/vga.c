@@ -106,7 +106,7 @@ static int handle_special_char(t_terminal *term, char c)
 
 				term->col = 0;
 				if (++term->row == VGA_HEIGHT)
-					term->row = 0;
+					scroll_terminal(term);
 				
 				set_cursor_pos(cursor_pos(term->row, term->col));
 				term->line_end[term->row] = 0;
@@ -140,6 +140,39 @@ static int handle_special_char(t_terminal *term, char c)
 	return 0;
 }
 
+void scroll_terminal(t_terminal *term)
+{
+	if (term == NULL)
+		return;
+
+	for (size_t y = 1; y < VGA_HEIGHT; y++)
+	{
+		for (size_t x = 0; x < VGA_WIDTH; x++)
+		{
+			size_t source = y * VGA_WIDTH + x;
+			size_t destination = (y - 1) * VGA_WIDTH + x;
+
+			term->buffer[destination] = term->buffer[source];
+		}
+
+		term->line_end[y - 1] = term->line_end[y];
+	}
+
+	for (size_t x = 0; x < VGA_WIDTH; x++)
+	{
+		size_t index = (VGA_HEIGHT - 1) * VGA_WIDTH + x;
+
+		term->buffer[index] = vga_entry(' ', term->color);
+	}
+
+	term->line_end[VGA_HEIGHT - 1] = 0;
+	term->row = VGA_HEIGHT - 1;
+	term->col = 0;
+
+	if (term->id == current_term)
+		terminal_render(term);
+}
+
 void terminal_putchar(t_terminal *term, char c) 
 {
 	if (term == NULL)
@@ -155,7 +188,7 @@ void terminal_putchar(t_terminal *term, char c)
 		term->col = 0;
 
 		if (++term->row == VGA_HEIGHT)
-			term->row = 0;
+			scroll_terminal(term);
 
 		term->line_end[term->row] = 0;
 	}
