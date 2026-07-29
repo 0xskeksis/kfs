@@ -53,6 +53,8 @@ void terminal_initialize(t_terminal *term, size_t id);
 void terminal_render(t_terminal *term);
 void scroll_terminal(t_terminal *term);
 
+uint8_t vga_entry_color(uint8_t fg, uint8_t bg);
+
 #define CURRENT_TERMINAL (&terminals[current_term])
 
 #endif
