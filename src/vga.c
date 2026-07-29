@@ -25,7 +25,7 @@
 #error "This tutorial needs to be compiled with a ix86-elf compiler"
 #endif
 
-static inline uint8_t vga_entry_color(uint16_t fg, uint16_t bg) 
+inline uint8_t vga_entry_color(uint8_t fg, uint8_t bg) 
 {
 	return fg | bg << 4;
 }

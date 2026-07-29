@@ -138,6 +138,8 @@ char keycode_to_char(keycode key)
 
 #undef HANDLE_KEY_STATE
 
+#define KEY_TO_COLOR_CASE(key, fg, bg) case key: CURRENT_TERMINAL->color = vga_entry_color(fg, bg); return 1
+
 int handle_shortcut(keycode key)
 {
 	if (ctrl_is_active() && key == KEY_C)
@@ -145,27 +147,34 @@ int handle_shortcut(keycode key)
 		terminal_initialize(CURRENT_TERMINAL, (CURRENT_TERMINAL)->id);
 		return 1;
 	}
-	if (alt_is_active() && key == KEY_F1)
+	if (alt_is_active())
 	{
-		current_term = 0;
-		terminal_render(CURRENT_TERMINAL);
-		return 1;
-	}	
-	if (alt_is_active() && key == KEY_F2)
-	{
-		current_term = 1;
-		terminal_render(CURRENT_TERMINAL);
-		return 1;
-	}	
-	if (alt_is_active() && key == KEY_F3)
-	{
-		current_term = 2;
-		terminal_render(CURRENT_TERMINAL);
-		return 1;
+		switch (key)
+		{
+			case KEY_F1: current_term = 0;
+			case KEY_F2: current_term = 1;
+			case KEY_F3: 
+			{
+				current_term = 2;
+				terminal_render(CURRENT_TERMINAL);
+				return 1;
+			}
+			KEY_TO_COLOR_CASE(KEY_1, VGA_COLOR_WHITE, CURRENT_TERMINAL->color >> 4);
+			KEY_TO_COLOR_CASE(KEY_2, VGA_COLOR_RED, CURRENT_TERMINAL->color >> 4);
+			KEY_TO_COLOR_CASE(KEY_3, VGA_COLOR_GREEN, CURRENT_TERMINAL->color >> 4);
+			KEY_TO_COLOR_CASE(KEY_4, VGA_COLOR_BLACK, CURRENT_TERMINAL->color >> 4);
+			KEY_TO_COLOR_CASE(KEY_5, CURRENT_TERMINAL->color & 0xFFFF, VGA_COLOR_BLACK);
+			KEY_TO_COLOR_CASE(KEY_6, CURRENT_TERMINAL->color & 0xFFFF, VGA_COLOR_WHITE);
+			KEY_TO_COLOR_CASE(KEY_7, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+			default:
+				break;
+		}
 	}
 
 	return 0;
 }
+
+#undef KEY_TO_COLOR_CASE
 
 void handle_keyboard_entry()
 {
