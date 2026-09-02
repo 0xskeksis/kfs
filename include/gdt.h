@@ -71,21 +71,36 @@
 
 
 
-typedef struct s_layout{
-	uint32_t	base;
-	uint32_t	limit;
-	uint32_t	access_bits;
-	uint32_t	flags;
-}t_layout;
+typedef struct s_layout
+{
+    uint32_t    base;
+    uint32_t    limit;
+    uint16_t    flags;
+}   t_layout;
 
-typedef struct s_gdt{
-	t_layout	kcode;
-	t_layout	kdata;
-	t_layout	kstack;
+typedef struct s_gdt
+{
+    t_layout    null;
+    t_layout    kcode;
+    t_layout    kdata;
+    t_layout    kstack;
+    t_layout    ucode;
+    t_layout    udata;
+    t_layout    ustack;
+}   t_gdt;
 
-	t_layout	ucode;
-	t_layout	udata;
-	t_layout	ustack;
-}t_gdt;
+typedef struct gdtr
+{
+    uint16_t limit;
+    uint32_t base;
+}__attribute__((packed)) t_gdtr;
+
+#define GDT_ENTRIES 7
+
+static uint64_t gdt_table[GDT_ENTRIES];
+
+void	gdt_flush(struct gdtr *gdtr);
+t_gdt	*gdt_init(void);
+
 
 #endif
