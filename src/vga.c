@@ -122,6 +122,9 @@ static int handle_special_char(t_terminal *term, char c)
 						return 1;
 				}
 
+				if (term->col == 1 && shell_mode == 1)
+					return 0;
+
 				term->col--;
 
 				terminal_putentryat(term, ' ', term->color, term->col, term->row);
@@ -176,6 +179,7 @@ void terminal_putchar(t_terminal *term, char c)
 		return;
 
 	terminal_putentryat(term, c, term->color, term->col, term->row);
+	term->line_end[term->row]++;
 	if (++term->col == VGA_WIDTH) 
 	{
 		term->line_end[term->row] = VGA_WIDTH;

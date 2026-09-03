@@ -1,7 +1,9 @@
 #include <io/io.h>
 #include <io/keyboard.h>
+#include <stdio.h>
 #include <vga.h>
 #include <stdint.h>
+#include <shell.h>
 
 static unsigned char keyboard_state = 0;
 
@@ -139,9 +141,18 @@ char keycode_to_char(keycode key)
 #undef HANDLE_KEY_STATE
 
 #define KEY_TO_COLOR_CASE(key, fg, bg) case key: CURRENT_TERMINAL->color = vga_entry_color(fg, bg); return 1
+#define SWITCH_TERM(key, n) case key: current_term = n; terminal_render(CURRENT_TERMINAL); return 1
 
 int handle_shortcut(keycode key)
 {
+	if (key == KEY_ENTER)
+	{
+		if (shell_mode == 1)
+		{
+			shell_execute(CURRENT_TERMINAL);
+			return 1;
+		}
+	}
 	if (ctrl_is_active() && key == KEY_C)
 	{
 		terminal_initialize(CURRENT_TERMINAL, (CURRENT_TERMINAL)->id);
@@ -151,14 +162,9 @@ int handle_shortcut(keycode key)
 	{
 		switch (key)
 		{
-			case KEY_F1: current_term = 0;
-			case KEY_F2: current_term = 1;
-			case KEY_F3: 
-			{
-				current_term = 2;
-				terminal_render(CURRENT_TERMINAL);
-				return 1;
-			}
+			SWITCH_TERM(KEY_F1, 0);
+			SWITCH_TERM(KEY_F2, 1);
+			SWITCH_TERM(KEY_F3, 2);
 			KEY_TO_COLOR_CASE(KEY_1, VGA_COLOR_WHITE, CURRENT_TERMINAL->color >> 4);
 			KEY_TO_COLOR_CASE(KEY_2, VGA_COLOR_RED, CURRENT_TERMINAL->color >> 4);
 			KEY_TO_COLOR_CASE(KEY_3, VGA_COLOR_GREEN, CURRENT_TERMINAL->color >> 4);
@@ -166,6 +172,23 @@ int handle_shortcut(keycode key)
 			KEY_TO_COLOR_CASE(KEY_5, CURRENT_TERMINAL->color & 0xFFFF, VGA_COLOR_BLACK);
 			KEY_TO_COLOR_CASE(KEY_6, CURRENT_TERMINAL->color & 0xFFFF, VGA_COLOR_WHITE);
 			KEY_TO_COLOR_CASE(KEY_7, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+			case KEY_S:
+			{
+				shell_mode = !shell_mode;
+				if (shell_mode == 1)
+					printf("\n>");
+			}
+			/*
+			case KEY_T:
+			{
+				char *line;
+				readline(CURRENT_TERMINAL, line);
+				t_command_parse command;
+				parse_line(line, &command, );
+				print_command(&command);
+				return 1;
+			}
+			*/
 			default:
 				break;
 		}

@@ -9,6 +9,7 @@ BUILD_DIR   := .build
 SRC_DIRS   := 	src \
 				src/io \
 				src/utils \
+				src/shell \
 
 # SRC_DIRS	:= $(addprefix src/, $(SRC_DIRS))
 INC_DIR     := include \

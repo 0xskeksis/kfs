@@ -45,6 +45,7 @@ typedef struct
 
 extern t_terminal terminals[TERMINAL_COUNT];
 extern size_t current_term;
+extern int shell_mode;
 
 void terminal_writestring(t_terminal *term, const char* data);
 void terminal_write(t_terminal *term, const char* data, size_t size);

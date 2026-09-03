@@ -1,4 +1,5 @@
-int	ft_isalpha(char c)
+#include <ctype.h>
+int	isalpha(char c)
 {
 	return (((unsigned int)c | 32) - 'a' < 26);
 }
