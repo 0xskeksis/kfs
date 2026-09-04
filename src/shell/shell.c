@@ -3,6 +3,7 @@
 #include <shell.h>
 #include <string.h>
 #include <stdio.h>
+#include "utils.h"
 
 char *skip_whitespace(char *str)
 {
@@ -20,7 +21,7 @@ void parse_line(char *line, t_command_parse *command, size_t prefix_len)
 	char *cpy = command->line;
 
 
-	while (*cpy != '\0' && isalnum((unsigned char)*cpy))
+	while (*cpy != '\0' && (isalnum((unsigned char)*cpy) || *cpy == '_'))
 		cpy++;
 
 	command->command_size = cpy - command->line;
@@ -72,6 +73,25 @@ int halt_cmd(__attribute__((unused)) char*_)
 int reboot_cmd(__attribute__((unused)) char *_)
 {
 	reboot_kernel();
+}
+
+int print_stack_cmd(char *size)
+{
+	if (size == NULL)
+		goto error;
+
+	uint32_t len = atoi(size);
+
+	if (len <= 0)
+		goto error;
+
+	print_stack(len);
+	return 0;
+
+error:
+	printf("Usage: print_stack [stack_size], with stack_size >= 1\n");
+	return 1;
+
 }
 
 void shell_execute(t_terminal *term)
