@@ -40,10 +40,11 @@ int reboot_cmd(char *_);
 
 int print_stack_cmd(char *size);
 int switch_term_cmd(char *term);
+int help_color_cmd(char *_);
 
 #define DEF_CMD(name, len, usage, help_msg) {#name"\0", len, usage"\0", help_msg"\0", name##_cmd}
 
-#define CMD_NUM 6
+#define CMD_NUM 7
 static t_command commands[] =
 {
 	DEF_CMD(help, 4, "help", "Display this message"),
@@ -52,4 +53,5 @@ static t_command commands[] =
 	DEF_CMD(reboot, 6, "reboot", "Reboot the kernel"),
 	DEF_CMD(print_stack, 11, "print_stack [stack_size], with stack_size >= 1", "Print the stack of the kernel"),
 	DEF_CMD(switch_term, 11, "switch_term [term_num], with 0 >= term_num <= 2", "Swicth the terminal"),
+	DEF_CMD(help_color, 10, "help_color", "Display the help color message"),
 };

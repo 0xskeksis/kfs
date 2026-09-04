@@ -104,6 +104,20 @@ int switch_term_cmd(char *term)
 	return 0;
 }
 
+int help_color_cmd(__attribute__((unused)) char *_)
+{
+	printf( "Color usage:\n"
+			"- CTRL+1: set foreground to white\n"
+			"- CTRL+2: set foreground to red\n"
+			"- CTRL+3: set foreground to green\n"
+			"- CTRL+4: set foreground to black\n"
+			"- CTRL+5: set background to white\n"
+			"- CTRL+6: set background to black\n"
+			"- CTRL+7: reset to classic colors\n"
+		);
+	return 0;
+}
+
 void shell_execute(t_terminal *term)
 {
 	t_command_parse parsing;
