@@ -1,3 +1,5 @@
+#include "gdt.h"
+
 __attribute__((noreturn))
 void
 __exit(int status){
@@ -23,10 +25,31 @@ int main(void)
 	terminal_initialize(&terminals[0], 0);
 	terminal_initialize(&terminals[1], 1);
 	terminal_initialize(&terminals[2], 2);
+	uint16_t cs;
+	uint16_t ds;
+	uint16_t ss;
+
+	printf("Before GDT FLUSH: \n");
+	t_gdtr gdtr;
+
+	asm volatile ("sgdt %0" : "=m"(gdtr));
+
+	printf("sizeof = %x\n", sizeof(gdt_table));
+	printf("limit  = %x\n", gdtr.limit);
+
+	gdt_init();
+	printf("After GDT FLUSH: \n");
+
+	t_gdtr test;
+
+	asm volatile ("sgdt %0" : "=m"(test));
+
+	printf("CPU base  = %x\n", test.base);
+	printf("CPU limit = %x\n", test.limit);
+
 	printf(">");
 
-	//printf("%s %i %c %x %u", "hello", 12, 'c', 42, -12);
 	for (;;)
-		handle_keyboard_entry();
-	return 1;
+		// handle_keyboard_entry();
+		return 1;
 }
