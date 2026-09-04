@@ -14,22 +14,27 @@ char *skip_whitespace(char *str)
 
 void parse_line(char *line, t_command_parse *command, size_t prefix_len)
 {
-	printf("\nLine info: str %s str + prefix %s\n", line, &(line[prefix_len]));
 	command->line = &(line[prefix_len]);
-	command->line = skip_whitespace(line);
+	command->line = skip_whitespace(command->line);
+	command->command = command->line;
 	char *cpy = command->line;
 
-	while (*cpy != '\0' && isalnum(*cpy))
+
+	while (*cpy != '\0' && isalnum((unsigned char)*cpy))
 		cpy++;
 
 	command->command_size = cpy - command->line;
-	cpy = skip_whitespace(cpy);
+
 	if (*cpy == '\0')
 	{
 		command->args = NULL;
 		command->args_size = 0;
 		return;
 	}
+
+	*cpy = '\0';
+	cpy++;
+	cpy = skip_whitespace(cpy);
 	command->args = cpy;
 	command->args_size = strlen(cpy);
 	return;
@@ -51,8 +56,22 @@ int help_cmd(__attribute__((unused)) char *_)
 
 int test_cmd(char *args)
 {
-	printf("test command: %s\n", args);
+	if (args == NULL)
+		printf("test command: test\n");
+	else
+		printf("test command: %s\n", args);
 	return 0;
+}
+
+int halt_cmd(__attribute__((unused)) char*_)
+{
+	__asm__ volatile ("hlt"::);
+	__builtin_unreachable();
+}
+
+int reboot_cmd(__attribute__((unused)) char *_)
+{
+	reboot_kernel();
 }
 
 void shell_execute(t_terminal *term)
@@ -70,11 +89,11 @@ void shell_execute(t_terminal *term)
 	{
 		t_command current = commands[i];
 		int res = strncmp(parsing.command, current.name, current.name_len);
-		printf("Current test: command vs line: %s; %s\nSize: %d, comp result: %d\n", parsing.command, current.name, current.name_len, res);
-		if (!res)
+		if (!res && current.name_len == parsing.command_size)
 		{
 			current.command(parsing.args);
 			did_cmd = 1;
+			break;
 		}
 	}
 

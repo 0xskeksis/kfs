@@ -177,6 +177,7 @@ int handle_shortcut(keycode key)
 				shell_mode = !shell_mode;
 				if (shell_mode == 1)
 					printf("\n>");
+				return 1;
 			}
 			/*
 			case KEY_T:
