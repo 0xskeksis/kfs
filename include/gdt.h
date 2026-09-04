@@ -97,7 +97,7 @@ typedef struct gdtr
 
 #define GDT_ENTRIES 7
 
-static uint64_t gdt_table[GDT_ENTRIES];
+static uint64_t gdt_table[GDT_ENTRIES]
  __attribute__((section(".gdt")));
 
 void	gdt_flush(struct gdtr *gdtr);

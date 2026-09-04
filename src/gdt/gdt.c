@@ -1,6 +1,7 @@
 #include "gdt.h"
 
-static uint64_t gdt_table[GDT_ENTRIES];
+static uint64_t gdt_table[GDT_ENTRIES]
+ __attribute__((section(".gdt")));
 
 
 static uint64_t
