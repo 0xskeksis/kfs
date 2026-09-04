@@ -43,8 +43,8 @@ hexdump(uint32_t *buffer, uint32_t len)
     }
 }
 void
-print_stack(){
+print_stack(uint32_t len){
 	uint32_t *esp;
 	asm volatile("mov %%esp, %0" : "=r"(esp));
-	hexdump(esp, 1024);
+	hexdump(esp, len);
 }
