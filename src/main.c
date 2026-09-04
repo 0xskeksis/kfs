@@ -16,6 +16,9 @@ __exit(int status){
 #include "vga.h"
 #include "stdio.h"
 #include "io/keyboard.h"
+#include "shell.h"
+
+int shell_mode = 1;
 
 int main(void) 
 {
@@ -44,6 +47,7 @@ int main(void)
 	printf("CPU base  = %x\n", test.base);
 	printf("CPU limit = %x\n", test.limit);
 
+	printf(">");
 
 	for (;;)
 		// handle_keyboard_entry();

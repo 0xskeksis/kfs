@@ -10,6 +10,7 @@ SRC_DIRS   := 	src \
 				src/io \
 				src/utils \
 				src/gdt \
+				src/shell \
 
 # SRC_DIRS	:= $(addprefix src/, $(SRC_DIRS))
 INC_DIR     := include \
@@ -26,7 +27,9 @@ C_SRCS		:= $(foreach DIR, $(SRC_DIRS), $(wildcard $(DIR)/*.c))
 # $(info $(C_SRCS))
 
 ASM_SRCS    := src/bootloader.s \
-			   src/gdt/gdt_link.s \
+			       src/gdt/gdt_link.s \
+             src/shell/reboot.s \
+
 
 C_OBJS  	= $(addprefix $(BUILD_DIR)/, $(C_SRCS:%.c=%.o))
 ASM_OBJS  	= $(addprefix $(BUILD_DIR)/, $(ASM_SRCS:%.s=%.o))

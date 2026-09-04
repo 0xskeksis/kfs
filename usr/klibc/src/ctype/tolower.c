@@ -1,6 +1,6 @@
 #include "ctype.h"
 
-int	ft_tolower(int c)
+int	tolower(char c)
 {
 	if (isupper(c))
 		return (c | 32);
