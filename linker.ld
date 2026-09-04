@@ -24,4 +24,10 @@ SECTIONS{
 		*(.COMMON)
 		*(.bss)
 	}
+	. = 0x00000800;
+
+    .gdt :
+    {
+        *(.gdt)
+    }
 }
