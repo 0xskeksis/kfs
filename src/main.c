@@ -22,6 +22,8 @@ int shell_mode = 1;
 
 int main(void) 
 {
+	gdt_init();
+
 	terminal_initialize(&terminals[0], 0);
 	terminal_initialize(&terminals[1], 1);
 	terminal_initialize(&terminals[2], 2);

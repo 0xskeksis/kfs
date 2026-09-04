@@ -46,8 +46,10 @@ $(info $(IFLAGS))
 CFLAGS      := -std=gnu11          \
                -ffreestanding      \
                -fno-builtin        \
+			   -fno-exception		\
                -fno-stack-protector \
                -Os                 \
+			   -rtti				\
                -MMD                \
                -MP					\
 
