@@ -50,6 +50,6 @@ int main(void)
 	printf(">");
 
 	for (;;)
-		// handle_keyboard_entry();
+		handle_keyboard_entry();
 		return 1;
 }
