@@ -1,6 +1,7 @@
 #include "gdt.h"
 
-static uint64_t gdt_table[GDT_ENTRIES];
+static uint64_t gdt_table[GDT_ENTRIES]
+ __attribute__((section(".gdt")));
 
 
 static uint64_t
@@ -8,7 +9,6 @@ create_descriptor(uint32_t base, uint32_t limit, uint16_t flag)
 {
     uint64_t descriptor;
 
-    /* High 32 bits */
     descriptor  =  limit       & 0x000F0000;
     descriptor |= (flag << 8)  & 0x00F0FF00;
     descriptor |= (base >> 16) & 0x000000FF;
@@ -16,7 +16,6 @@ create_descriptor(uint32_t base, uint32_t limit, uint16_t flag)
 
     descriptor <<= 32;
 
-    /* Low 32 bits */
     descriptor |= base  << 16;
     descriptor |= limit & 0x0000FFFF;
 
