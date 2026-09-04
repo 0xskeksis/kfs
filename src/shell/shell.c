@@ -78,20 +78,30 @@ int reboot_cmd(__attribute__((unused)) char *_)
 int print_stack_cmd(char *size)
 {
 	if (size == NULL)
-		goto error;
+		return 1;
 
 	uint32_t len = atoi(size);
 
 	if (len <= 0)
-		goto error;
+		return 1;
 
 	print_stack(len);
 	return 0;
+}
 
-error:
-	printf("Usage: print_stack [stack_size], with stack_size >= 1\n");
-	return 1;
+int switch_term_cmd(char *term)
+{
+	if (term == NULL)
+		return 1;
 
+	uint32_t term_num = atoi(term);
+
+	if (term_num >= 3)
+		return 1;
+
+	current_term = term_num;
+	terminal_render(CURRENT_TERMINAL);
+	return 0;
 }
 
 void shell_execute(t_terminal *term)
@@ -111,7 +121,9 @@ void shell_execute(t_terminal *term)
 		int res = strncmp(parsing.command, current.name, current.name_len);
 		if (!res && current.name_len == parsing.command_size)
 		{
-			current.command(parsing.args);
+			int ret = current.command(parsing.args);
+			if (ret == 1)
+				printf("Usage: %s\n", current.help_str);
 			did_cmd = 1;
 			break;
 		}
