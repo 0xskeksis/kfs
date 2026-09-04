@@ -1,29 +1,6 @@
-
-
-/*
- * Code de test trouve sur le wiki, je referais un driver VGA
- *
- *
- *
- *
- *
- *
- *
- */
-
 #include "vga.h"
 #include "string.h"
 #include "io/cursor.h"
-
-/* Check if the compiler thinks you are targeting the wrong operating system. */
-#if defined(__linux__)
-#error "You are not using a cross-compiler, you will most certainly run into trouble"
-#endif
-
-/* This tutorial will only work for the 32-bit ix86 targets. */
-#if !defined(__i386__)
-#error "This tutorial needs to be compiled with a ix86-elf compiler"
-#endif
 
 inline uint8_t vga_entry_color(uint8_t fg, uint8_t bg) 
 {
