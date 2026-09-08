@@ -4,6 +4,7 @@
 #include <vga.h>
 #include <stdint.h>
 #include <shell.h>
+#include <io/shortcut.h>
 
 static unsigned char keyboard_state = 0;
 
@@ -23,27 +24,27 @@ int keyboard_read_scancode(unsigned char *scancode)
 	return 1;
 }
 
-static inline char alt_is_active()
+char alt_is_active()
 {
 	return (keyboard_state & (KBSF_LEFT_ALT | KBSF_RIGHT_ALT)) != 0;
 }
 
-static inline char ctrl_is_active()
+char ctrl_is_active()
 {
 	return (keyboard_state & (KBSF_LEFT_CTRL | KBSF_RIGHT_CTRL)) != 0;
 }
 
-static inline char shift_is_active()
+char shift_is_active()
 {
 	return (keyboard_state & (KBSF_LEFT_SHIFT | KBSF_RIGHT_SHIFT)) != 0;
 }
 
-static inline char caps_lock_is_active()
+char caps_lock_is_active()
 {
 	return (keyboard_state & KBSF_CAPS_LOCK) != 0;
 }
 
-static inline char extended_is_active()
+char extended_is_active()
 {
 	return (keyboard_state & KBSF_EXTENDED) != 0;
 }
@@ -115,6 +116,8 @@ void keyboard_update_state(keycode key, char pressed)
 	}
 }
 
+#undef HANDLE_KEY_STATE
+
 char keycode_to_char(keycode key)
 {
 	char normal;
@@ -137,49 +140,6 @@ char keycode_to_char(keycode key)
 
 	return normal;
 }
-
-#undef HANDLE_KEY_STATE
-
-#define KEY_TO_COLOR_CASE(key, fg, bg) case key: CURRENT_TERMINAL->color = vga_entry_color(fg, bg); return 1
-
-int handle_shortcut(keycode key)
-{
-	if (key == KEY_ENTER)
-	{
-		if (shell_mode == 1)
-		{
-			shell_execute(CURRENT_TERMINAL);
-			return 1;
-		}
-	}
-	if (ctrl_is_active())
-	{
-		switch (key)
-		{
-			KEY_TO_COLOR_CASE(KEY_1, VGA_COLOR_WHITE, CURRENT_TERMINAL->color >> 4);
-			KEY_TO_COLOR_CASE(KEY_2, VGA_COLOR_RED, CURRENT_TERMINAL->color >> 4);
-			KEY_TO_COLOR_CASE(KEY_3, VGA_COLOR_GREEN, CURRENT_TERMINAL->color >> 4);
-			KEY_TO_COLOR_CASE(KEY_4, VGA_COLOR_BLACK, CURRENT_TERMINAL->color >> 4);
-			KEY_TO_COLOR_CASE(KEY_5, CURRENT_TERMINAL->color & 0xFFFF, VGA_COLOR_BLACK);
-			KEY_TO_COLOR_CASE(KEY_6, CURRENT_TERMINAL->color & 0xFFFF, VGA_COLOR_WHITE);
-			KEY_TO_COLOR_CASE(KEY_7, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
-			case KEY_S:
-			{
-				shell_mode = !shell_mode;
-				if (shell_mode == 1)
-					printf("\n>");
-				return 1;
-			}
-			default:
-				break;
-		}
-	}
-
-	return 0;
-}
-
-#undef SWITCH_TERM
-#undef KEY_TO_COLOR_CASE
 
 void handle_keyboard_entry()
 {

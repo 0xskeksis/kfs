@@ -20,6 +20,12 @@ typedef enum
 	KBSF_EXTENDED = 1 << 7
 }	keyboard_state_flag;
 
+char alt_is_active();
+char ctrl_is_active();
+char shift_is_active();
+char caps_lock_is_active();
+char extended_is_active();
+
 typedef enum
 {
 	KEY_NONE = 0,
